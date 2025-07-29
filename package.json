@@ -1,0 +1,27 @@
+{
+  "name": "bot-dublador",
+  "version": "1.0.0",
+  "description": "Bot for dubbing videos and audio into another language",
+  "author": "augusto.zeni",
+  "license": "ISC",
+  "keywords": [],
+  "main": "index.js",
+  "scripts": {
+    "start": "npx ts-node src/index.ts",
+    "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "nodemon": "^3.1.10",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^5.0.0",
+    "@types/node": "^24.1.0",
+    "eslint": "^9.32.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
