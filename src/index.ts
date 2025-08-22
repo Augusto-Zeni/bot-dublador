@@ -16,19 +16,15 @@ bot.on('text', context => context.reply(`You said: ${context.message.text}`))
 
 bot.on('voice', async (context) => {
   try {
-    console.log(context.message.voice.mime_type)
-
     const fileId = context.message.voice.file_id
     const { href: fileUrl } = await context.telegram.getFileLink(fileId)
 
-    // Download the voice message
     const response = await axios({
       method: 'get',
       url: fileUrl,
       responseType: 'stream',
     })
 
-    // Save the voice message (voice messages are typically OGG)
     const filePath = `./downloads/${context.message.voice.file_id}.ogg`
     response.data.pipe(fs.createWriteStream(filePath))
 
