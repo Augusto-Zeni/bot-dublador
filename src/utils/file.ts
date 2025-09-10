@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { pipeline } from 'node:stream/promises'
 import axios from 'axios'
+import ffmpeg from 'fluent-ffmpeg'
 
 export async function saveVoice(url: string, fileId: string): Promise<string> {
   try {
@@ -35,4 +36,15 @@ export async function saveVoice(url: string, fileId: string): Promise<string> {
     console.error('### Error saving file:', err)
     throw new Error(`Error saving file: ${err.message}`)
   }
+}
+
+export async function convertToOgg(inputPath: string, outputPath: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    ffmpeg(inputPath)
+      .audioCodec('libopus')
+      .format('ogg')
+      .save(outputPath)
+      .on('end', () => resolve(outputPath))
+      .on('error', err => reject(err))
+  })
 }

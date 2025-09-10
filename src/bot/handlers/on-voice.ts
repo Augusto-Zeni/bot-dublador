@@ -1,7 +1,8 @@
 import type { Context, NarrowedContext } from 'telegraf'
-import type { Message, Update } from 'telegraf/typings/core/types/typegram.js'
-import { saveVoice } from '../../utils/file'
+import type { Message, Update } from 'telegraf/types'
+import { convertToOgg, saveVoice } from '../../utils/file'
 import { speachToText } from '../../utils/speachToText'
+import { textToSpeach } from '../../utils/textToSpeach'
 import { translateText } from '../../utils/translateText'
 
 export default async function handleVoice(context: NarrowedContext<Context<Update>, {
@@ -27,8 +28,15 @@ export default async function handleVoice(context: NarrowedContext<Context<Updat
     const saveVoiceDir = await saveVoice(href, fileId)
     const audioText = await speachToText(saveVoiceDir, mimeType)
     const translationText = await translateText(audioText, 'pt', 'english')
+    const audioBuffer = await textToSpeach(translationText, fileId)
 
-    await context.reply(`Voice message processed successfully!\n\nTranscript: ${translationText}`)
+    const oggPath = `/Users/augustozeni/Documents/bot-dublador/files/${fileId}.ogg`
+    const oggBuffer = await convertToOgg(audioBuffer, oggPath)
+
+    await context.replyWithVoice(
+      { source: oggBuffer },
+      { reply_to_message_id: context.message.message_id } as any,
+    )
   }
   catch (error: any) {
     console.error('### Error in handleVoice:', error)
