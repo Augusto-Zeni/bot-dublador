@@ -1,6 +1,7 @@
 import type { Context, NarrowedContext } from 'telegraf'
 import type { Message, Update } from 'telegraf/types'
-import { cleanupFiles, convertToOgg, saveVoice } from '../../utils/file'
+import path from 'node:path'
+import { cleanupFiles, convertToOgg, saveFile } from '../../utils/file'
 import { speachToText } from '../../utils/speachToText'
 import { textToSpeach } from '../../utils/textToSpeach'
 import { translateText } from '../../utils/translateText'
@@ -29,12 +30,12 @@ export default async function handleVoice(context: NarrowedContext<Context<Updat
 
     const { href } = await context.telegram.getFileLink(fileId)
 
-    saveVoiceDir = await saveVoice(href, fileId)
+    saveVoiceDir = await saveFile(href, fileId, mimeType)
     const audioText = await speachToText(saveVoiceDir, mimeType)
     const translationText = await translateText(audioText, 'pt', 'english')
     wavFilePath = await textToSpeach(translationText, fileId)
 
-    oggPath = `/Users/augustozeni/Documents/bot-dublador/files/${fileId}.ogg`
+    oggPath = path.join(__dirname, `../../../files/${fileId}.ogg`)
     const oggBuffer = await convertToOgg(wavFilePath, oggPath)
 
     await context.replyWithVoice(

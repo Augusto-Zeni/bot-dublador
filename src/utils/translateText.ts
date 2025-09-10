@@ -4,7 +4,7 @@ export async function translateText(text: string, from: string, to: string): Pro
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: `${text} #### Act as a professional translator and translate the above text into ${to}. Keep the translation as close to the original as possible in tone and style.`,
+      contents: `Translate the following text into ${to} without any additional text, introduction, or conclusion. The text is: "${text}"`,
     })
 
     return response.text || 'Empty translation'

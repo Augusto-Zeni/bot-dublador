@@ -3,7 +3,8 @@
 ## Descrição
 Este projeto implementa um bot para Telegram capaz de:
 - Receber mensagens de áudio do usuário, transcrever (speech-to-text), traduzir para outro idioma e gerar uma nova faixa de áudio (text-to-speech) com a tradução — ou simplesmente fazer *dubbing* mantendo o idioma com uma voz diferente.
-- Traduzir mensagens de texto quando solicitado (com comando ou automaticamente dependendo da configuração).
+- Traduzir mensagens de texto quando solicitado.
+- Dublagem de vídeos (extração de áudio + substituição da trilha de áudio com a versão dublada).
 
 > Observação: O projeto usa TypeScript e depende do FFmpeg instalado no sistema para manipulação/conveter formatos de áudio.
 

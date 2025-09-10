@@ -53,6 +53,7 @@ export async function textToSpeach(text: string, fileName: string): Promise<stri
     if (!data) {
       throw new Error('Dados de áudio não encontrados na resposta da IA.')
     }
+
     const dir = path.join(__dirname, '../../files')
 
     const audioBuffer = Buffer.from(data, 'base64')
