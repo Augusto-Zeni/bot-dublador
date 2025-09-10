@@ -1,6 +1,6 @@
 import type { Context, NarrowedContext } from 'telegraf'
 import type { Message, Update } from 'telegraf/types'
-import { convertToOgg, saveVoice } from '../../utils/file'
+import { cleanupFiles, convertToOgg, saveVoice } from '../../utils/file'
 import { speachToText } from '../../utils/speachToText'
 import { textToSpeach } from '../../utils/textToSpeach'
 import { translateText } from '../../utils/translateText'
@@ -9,6 +9,10 @@ export default async function handleVoice(context: NarrowedContext<Context<Updat
   message: Update.New & Update.NonChannel & Message.VoiceMessage
   update_id: number
 }>) {
+  let saveVoiceDir = ''
+  let wavFilePath = ''
+  let oggPath = ''
+
   try {
     if (!context.message?.voice) {
       await context.reply('No voicemail found.')
@@ -25,21 +29,28 @@ export default async function handleVoice(context: NarrowedContext<Context<Updat
 
     const { href } = await context.telegram.getFileLink(fileId)
 
-    const saveVoiceDir = await saveVoice(href, fileId)
+    saveVoiceDir = await saveVoice(href, fileId)
     const audioText = await speachToText(saveVoiceDir, mimeType)
     const translationText = await translateText(audioText, 'pt', 'english')
-    const audioBuffer = await textToSpeach(translationText, fileId)
+    wavFilePath = await textToSpeach(translationText, fileId)
 
-    const oggPath = `/Users/augustozeni/Documents/bot-dublador/files/${fileId}.ogg`
-    const oggBuffer = await convertToOgg(audioBuffer, oggPath)
+    oggPath = `/Users/augustozeni/Documents/bot-dublador/files/${fileId}.ogg`
+    const oggBuffer = await convertToOgg(wavFilePath, oggPath)
 
     await context.replyWithVoice(
       { source: oggBuffer },
       { reply_to_message_id: context.message.message_id } as any,
     )
+
+    // Limpar arquivos após sucesso
+    await cleanupFiles([saveVoiceDir, wavFilePath])
   }
   catch (error: any) {
     console.error('### Error in handleVoice:', error)
+
+    // Limpar arquivos mesmo em caso de erro
+    await cleanupFiles([saveVoiceDir, wavFilePath, oggPath])
+
     await context.reply(`Failed to process voice message: ${error.message}`)
   }
 }

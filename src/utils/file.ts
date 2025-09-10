@@ -48,3 +48,17 @@ export async function convertToOgg(inputPath: string, outputPath: string): Promi
       .on('error', err => reject(err))
   })
 }
+
+export async function cleanupFiles(filePaths: string[]) {
+  for (const filePath of filePaths) {
+    if (filePath && fs.existsSync(filePath)) {
+      try {
+        await fs.promises.unlink(filePath)
+        console.log(`Arquivo removido: ${filePath}`)
+      }
+      catch (error) {
+        console.error(`Erro ao remover arquivo ${filePath}:`, error)
+      }
+    }
+  }
+}
